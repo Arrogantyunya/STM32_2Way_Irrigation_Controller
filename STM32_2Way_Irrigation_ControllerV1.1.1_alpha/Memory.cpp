@@ -38,6 +38,21 @@ void EEPROM_Operations::EEPROM_GPIO_Config(void)
 }
 
 /*
+ @brief     : 重置EEPROM的值
+ @para      : 无
+ @return    : 无
+ */
+void EEPROM_Operations::EEPROM_Reset(void)
+{
+	EEPROM_Write_Enable();
+	for (size_t i = EEPROM_MIN_ADDR; i < EEPROM_MAX_ADDR; i++)
+	{
+		AT24CXX_WriteOneByte(i, 0x00);
+	}
+	EEPROM_Write_Disable();
+}
+
+/*
  @brief     : 写SN码到EEPROM
  @para      : SN码数组
  @return    : true or false

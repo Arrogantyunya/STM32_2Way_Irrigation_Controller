@@ -50,6 +50,7 @@
 #define USE_KEY				0 //使用按键发送数据
 #define USE_NODE			0 //loRa节点模式
 #define USE_GATEWAY			1 //loRa网关模式
+#define EEPROM_RESET		0 //重置EEPROM的所有值【测试使用】
 /* 替换宏 */
 #define Software_version_high 	0x01 	//软件版本的高位
 #define Software_version_low 	0x11  	//软件版本的低位
@@ -107,6 +108,9 @@ void setup()
 
 	bkp_init();	//备份寄存器初始化使能
 	EEPROM_Operation.EEPROM_GPIO_Config();		//设置EEPROM读写引脚
+#if	EEPROM_RESET
+	EEPROM_Operation.EEPROM_Reset();//重置EEPROM的所有值【测试使用】
+#endif
 	Some_Peripheral.Peripheral_GPIO_Config();	//设置继电器，数字输入，模拟输入等外设引脚的模式，以及初始化状态
 	iwdg_feed();
 
@@ -174,7 +178,7 @@ void setup()
 
 	Project_Debug(); //工程模式
 
-	// SN.Clear_SN_Access_Network_Flag(); //清除注册到服务器标志位
+	SN.Clear_SN_Access_Network_Flag(); //清除注册到服务器标志位
 
 	/*Request access network(request gateway to save the device's SN code and channel)*/
 	Request_Access_Network(); //检查是否注册到服务器
@@ -331,16 +335,7 @@ void Request_Access_Network(void)
  */
 void Project_Debug(void)
 {
-	// while (1)
-	// {
-	// 	iwdg_feed();
-	// 	for (size_t i = 0; i < 12; i++)
-	// 	{
-
-	// 	}
-
-	// }
-
+	
 }
 
 /*
@@ -437,6 +432,7 @@ void Change_status_report(void)
 
 		/*这里上报完成一个轮次循环*/
 		Message_Receipt.Irrigation_loop_Receipt(false, 1, random_1, random_2);
+		Message_Receipt.Working_Parameter_Receipt(false, 2, random_1, random_2);
 
 		Serial.println("Cycle status report completed... <Change_status_report>");
 	}

@@ -649,13 +649,14 @@ void LoRa::Parameter_Init(bool only_net)
 		iwdg_feed();
 		if (!only_net)
 		{
+			// Param_Check(AT_ADDR_, "2A2A2A0C", true);Serial.println("0C2A2A2A....");
 			StatusBuffer[i++] = Rewrite_ID();
 			StatusBuffer[i++] = Param_Check(AT_MADDR_, "71000000", false);
-			// StatusBuffer[i++] = Param_Check(AT_RIQ_, "00", true);
 			StatusBuffer[i++] = Param_Check(AT_RIQ_, "00", false);
 			StatusBuffer[i++] = Param_Check(AT_TFREQ_, "1C578DE0", false);//475.500.000
 			StatusBuffer[i++] = Param_Check(AT_RFREQ_, "1C03A180", false);//470.000.000
 			StatusBuffer[i++] = Param_Check(AT_SYNC_, "34", false);
+			
 
 #if USE_LORA_RESET
 			if (LoRa_Para_Config.Read_LoRa_Com_Mode() == 0xF1)

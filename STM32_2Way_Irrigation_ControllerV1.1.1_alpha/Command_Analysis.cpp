@@ -396,7 +396,6 @@ void Command_Analysis::Query_Current_Work_Param(void)
 	{
 		Serial.println("A011 <Query_Current_Work_Param>");
 		Serial.flush();
-		delay(200);
 		if (gReceiveCmd[8] == 0x01) //配置参数标志（LoRa大棚传感器是0x00配置采集时间）
 		{
 			Get_receipt = true;
@@ -438,7 +437,6 @@ void Command_Analysis::Set_Group_Number(void)
 	{
 		Serial.println("A012 <Set_Group_Number>");
 		Serial.flush();
-		delay(200);
 		Get_receipt = true;
 		if (SN.Save_Group_Number(&gReceiveCmd[8]) == true)
 		{
@@ -466,11 +464,10 @@ void Command_Analysis::Set_SN_Area_Channel(void)
 	//Frame head | Frame ID | Data Length | Device type ID | mass flag   |   Area number | Device channel |  subordinate channel   | SN code     |  CRC8   |  Frame end
 	//  1 byte       2 byte      1 byte          2 byte        1 byte          1 byte          1 byte           1 byte                9 byte       1 byte      6 byte
 
-	if (Verify_Frame_Validity(4, 15, false, false) == true)
+	if (Verify_Frame_Validity(4, gReceiveCmd[3], false, false) == true)
 	{
 		Serial.println("A013 <Set_SN_Area_Channel>");
 		Serial.flush();
-		delay(200);
 		Get_receipt = true;
 		if (SN.Save_SN_Code(&gReceiveCmd[10]) == true && SN.Save_BKP_SN_Code(&gReceiveCmd[10]) == true)
 		{
@@ -515,7 +512,6 @@ void Command_Analysis::Detailed_Work_Status(void)
 	{
 		Serial.println("A014 <Detailed_Work_Status>");
 		Serial.flush();
-		delay(200);
 		Get_receipt = false;//每次进入至该函数，将该值置为false
 
 		Serial.println("查询本设备详细工作状态 <Detailed_Work_Status>");
@@ -842,7 +838,6 @@ void Command_Analysis::General_controller_control_command(void)
 	{
 		Serial.println("A000 <General_controller_control_command>");
 		Serial.flush();
-		delay(200);
 		Get_receipt = false;//每次进入至该函数，现将该值置为false
 		randomId_1 = gReceiveCmd[9]; randomId_2 = gReceiveCmd[10];//
 
@@ -905,6 +900,7 @@ void Command_Analysis::General_controller_control_command(void)
 		Modbus_Coil.Modbus_Realization(modbusPacket, modbusPacket_Length);//设置输出线圈状态，modbus实现
 
 		Message_Receipt.Control_command_Receipt(gReceiveCmd[11], gReceiveCmd[12], 1, gReceiveCmd[9], gReceiveCmd[10]);
+		DOStatus_Change = true;//接收到指令后上报实时状态
 	}
 	memset(gReceiveCmd, 0x00, gReceiveLength);
 }
@@ -928,7 +924,6 @@ void Command_Analysis::R_General_controller_control_command(void)
 	{
 		Serial.println("A001 <R_General_controller_control_command>");
 		Serial.flush();
-		delay(200);
 
 		if (gLoRaCSQ[0] == 0 || gLoRaCSQ[1] == 0)
 		{
@@ -1033,7 +1028,6 @@ void Command_Analysis::Set_General_controller_output_init(void)
 	{
 		Serial.println("A002 <Set_General_controller_output_init>");
 		Serial.flush();
-		delay(200);
 		Get_receipt = true;
 		unsigned char Status_E002 = 0x00;//状态
 
@@ -1163,7 +1157,6 @@ void Command_Analysis::Irrigation_Controllor_control_command(void)
 	{
 		Serial.println("A003 <Irrigation_Controllor_control_command>");
 		Serial.flush();
-		delay(200);
 		Get_receipt = true;
 		iwdg_feed();
 		Stop_Timer4();//先停止计时
@@ -1214,6 +1207,7 @@ void Command_Analysis::Irrigation_Controllor_control_command(void)
 			DO_Set[i] = false;//DO设置的标志位
 			Set_Irrigation_relay(i, OFF);
 		}
+		DOStatus_Change = true;
 
 
 		if (InitState.Save_CyclicInterval(gReceiveCmd[72], gReceiveCmd[73]))

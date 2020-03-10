@@ -14,6 +14,7 @@
 #include "pwm.h"
 #include "Memory.h"
 #include "Set_coil.h"
+#include "Command_Analysis.h"
 
 Some_Peripherals Some_Peripheral;
 
@@ -30,6 +31,8 @@ void Some_Peripherals::Peripheral_GPIO_Pinmode(void)
 {
 	pinMode(KCZJ1, OUTPUT);
 	pinMode(KCZJ2, OUTPUT);
+	Set_Irrigation_relay(0, OFF);
+	Set_Irrigation_relay(1, OFF);
 	// pinMode(KCZJ3, OUTPUT);
 	// pinMode(KCZJ4, OUTPUT);
 	// pinMode(KCZJ5, OUTPUT);

@@ -146,6 +146,7 @@ inline void EEPROM_Write_Enable(void)
 class EEPROM_Operations : protected AT24Cxx {
 public:
 	void EEPROM_GPIO_Config(void);
+	void EEPROM_Reset(void);//将EP的值重置
 };
 
 class SN_Operations : public EEPROM_Operations {
@@ -246,6 +247,7 @@ public:
 	unsigned int Read_CyclicInterval();//读取循环间隔时间
 	bool Clean_CyclicInterval(void);//清除循环间隔时间
 };
+
 
 
 
